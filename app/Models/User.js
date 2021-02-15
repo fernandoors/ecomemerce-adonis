@@ -7,7 +7,7 @@ const Model = use('Model')
 const Hash = use('Hash')
 
 class User extends Model {
-  static boot () {
+  static boot() {
     super.boot()
 
     /**
@@ -31,14 +31,25 @@ class User extends Model {
    *
    * @return {Object}
    */
-  tokens () {
+  tokens() {
     return this.hasMany('App/Models/Token')
   }
-  static get traits () {
+
+  static get hidden() {
+    return ['password']
+  }
+
+  static get traits() {
     return [
       '@provider:Adonis/Acl/HasRole',
       '@provider:Adonis/Acl/HasPermission'
     ]
+  }
+  image() {
+    return this.belongsTo('App/Models/Image')
+  }
+  coupons() {
+    return this.belongsToMany('App/Models/Coupon')
   }
 }
 
