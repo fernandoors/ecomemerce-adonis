@@ -7,8 +7,6 @@ class CategoryProductSchema extends Schema {
   up() {
     this.create('category_product', (table) => {
       table.increments()
-      table.timestamps()
-      table.increments()
       table.integer('category_id').unsigned()
       table.integer('product_id').unsigned()
       table
