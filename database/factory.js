@@ -32,7 +32,7 @@ Factory.blueprint('App/Models/Category', (faker) => {
 
 Factory.blueprint('App/Models/Product', (faker) => {
   return {
-    title: faker.animal(),
+    name: faker.animal(),
     description: faker.sentence(),
     price: faker.floating({ min: 0, max: 1000, fixed: 2 })
   }
