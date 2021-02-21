@@ -61,8 +61,14 @@ class CategoryController {
    * @param {View} ctx.view
    */
   async show({ params: { id }, response }) {
-    const category = await Category.findOrFail(id)
-    return response.send(category)
+    try {
+      const category = await Category.findOrFail(id)
+      return response.send(category)
+    } catch (error) {
+      return response.status(400).send({
+        message: 'Erro ao processar a sua solicitação!'
+      })
+    }
   }
 
   /**
@@ -74,11 +80,17 @@ class CategoryController {
    * @param {Response} ctx.response
    */
   async update({ params: { id }, request, response }) {
-    const category = await Category.findOrFail(id)
-    const { title, description, image_id } = request.all()
-    category.merge({ title, description, image_id })
-    await category.save()
-    return response.send(category)
+    try {
+      const category = await Category.findOrFail(id)
+      const { title, description, image_id } = request.all()
+      category.merge({ title, description, image_id })
+      await category.save()
+      return response.send(category)
+    } catch (error) {
+      return response.status(400).send({
+        message: 'Erro ao processar a sua solicitação!'
+      })
+    }
   }
 
   /**
@@ -89,10 +101,16 @@ class CategoryController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy({ params: { id }, request, response }) {
-    const category = await Category.findOrFail(id)
-    await category.delete()
-    return response.status(204).send({})
+  async destroy({ params: { id }, response }) {
+    try {
+      const category = await Category.findOrFail(id)
+      await category.delete()
+      return response.status(204).send({})
+    } catch (error) {
+      return response.status(500).send({
+        message: 'Erro ao processar a sua solicitação!'
+      })
+    }
   }
 }
 
