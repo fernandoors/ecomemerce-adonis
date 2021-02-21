@@ -52,11 +52,11 @@ class AuthController {
      * @param {Response} ctx.response
      */
   async refresh({ request, response, auth }) {
-    let refresh_token = request.input('refresh_token')
-    if (!refresh_token) {
-      refresh_token = request.header('refresh_token')
+    let refreshToken = request.input('refreshToken')
+    if (!refreshToken) {
+      refreshToken = request.header('refreshToken')
     }
-    const user = await auth.newRefreshToken().generateForRefreshToken(refresh_token)
+    const user = await auth.newRefreshToken().generateForRefreshToken(refreshToken)
 
     return response.send({ data: user })
   }
@@ -66,13 +66,11 @@ class AuthController {
      * @param {Request} ctx.request
      * @param {Response} ctx.response
      */
-  async logout({ request, response, auth }) {
-    let refresh_token = request.input('refresh_token')
-    if (!refresh_token) {
-      refresh_token = request.header('refresh_token')
-    }
-    await auth.authenticator('jwt').revokeTokens([refresh_token], true)
-    return response.status(204)
+  async logout({ response, auth }) {
+    const user = auth.current.user
+    const token = auth.getAuthHeader()
+    await user.tokens().where('token', token).update({ is_revoked: true })
+    return response.status(204).send({})
   }
 
   /**

@@ -8,7 +8,7 @@ Route.group(() => {
   Route.post('register', 'AuthController.register').as('auth.register')
   Route.post('login', 'AuthController.login').as('auth.login')
   Route.post('refresh', 'AuthController.refresh').as('auth.refresh')
-  Route.post('logout', 'AuthController.logout').as('auth.logout')
+  Route.get('logout', 'AuthController.logout').as('auth.logout').middleware(['auth'])
 
   Route.post('reset-password', 'AuthController.forgot').as('auth.forgot')
   Route.get('reset-password', 'AuthController.remember').as('auth.remember')
