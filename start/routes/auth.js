@@ -4,11 +4,11 @@
 const Route = use('Route')
 
 Route.group(() => {
-  Route.get('logout', 'AuthController.logout').as('auth.logout').middleware(['auth'])
+  Route.get('logout', 'AuthController.logout').as('auth.logout').middleware(['auth']).validator('Auth/Register')
 
 
   Route.post('register', 'AuthController.register').as('auth.register').middleware(['guest'])
-  Route.post('login', 'AuthController.login').as('auth.login').middleware(['guest'])
+  Route.post('login', 'AuthController.login').as('auth.login').middleware(['guest']).validator('Auth/Login')
   Route.post('refresh', 'AuthController.refresh').as('auth.refresh').middleware(['guest'])
   Route.post('reset-password', 'AuthController.forgot').as('auth.forgot').middleware(['guest'])
   Route.get('reset-password', 'AuthController.remember').as('auth.remember').middleware(['guest'])
