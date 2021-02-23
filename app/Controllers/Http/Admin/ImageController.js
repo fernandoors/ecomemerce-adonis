@@ -130,10 +130,8 @@ class ImageController {
       const image = await Image.findOrFail(id)
       const filePath = Helpers.publicPath(`uploads/${image.path}`)
 
-      await fs.unlink(filePath, err => {
-        if (!err) { await image.delete() }
-      })
-
+      fs.unlinkSync(filePath)
+      await image.delete()
       return response.status(204).send({})
     } catch (error) {
       return response.status(400).send({ message: 'Não foi possível atualizar esta operação no momento!' })
