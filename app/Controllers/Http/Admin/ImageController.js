@@ -58,7 +58,7 @@ class ImageController {
             path: files.fileName,
             size: files.size,
             original_name: files.clientName,
-            extation: files.subtype
+            extension: files.subtype
           })
           const transformedImage = await transform.item(image, Transformer)
           images.push(transformedImage)
@@ -72,7 +72,7 @@ class ImageController {
             path: file.fileName,
             size: file.size,
             original_name: file.clientName,
-            extation: file.subtype
+            extension: file.subtype
           })
           const transformedImage = await transform.item(image, Transformer)
           images.push(transformedImage)

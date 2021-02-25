@@ -29,6 +29,7 @@ const str_random = async (length = 40) => {
  * @return { Object<FileJar> }
  */
 const manage_single_upload = async (file, path = null) => {
+  path = !!path ? path : Helpers.publicPath('uploads')
   const random_name = await str_random(30)
   const fileName = `${new Date().getTime()}-${random_name}.${file.subtype}`
   await file.move(path, {

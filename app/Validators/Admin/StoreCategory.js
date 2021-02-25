@@ -4,7 +4,7 @@ class AdminStoreCategory {
   get rules() {
     return {
       title: 'required',
-      description: 'description',
+      description: 'required',
     }
   }
 }
