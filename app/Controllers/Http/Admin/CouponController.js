@@ -9,6 +9,7 @@
  */
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Coupon = use('App/Models/Coupon')
+const Transformer = use('App/Transformers/Admin/CouponTransformer')
 
 const Database = use('Database')
 const Service = use('App/Services/Coupon/CouponService')
@@ -22,13 +23,14 @@ class CouponController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index({ request, response, pagination }) {
+  async index({ request, response, pagination, transform }) {
     const code = request.input('code')
     const query = Coupon.query()
     if (!!code) {
       query.where('code', 'LIKE', `%${code}%`)
     }
-    const coupons = await query.paginate(pagination.page, pagination.limit)
+    let coupons = await query.paginate(pagination.page, pagination.limit)
+    coupons = await transform.paginate(coupons, Transformer)
     return response.send(coupons)
   }
 
@@ -40,7 +42,7 @@ class CouponController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store({ request, response }) {
+  async store({ request, response, transform }) {
     const trx = await Database.beginTransaction()
     const can_use_for = {
       client: false,
@@ -57,7 +59,7 @@ class CouponController {
         'recursive'
       ])
       const { users, products } = request.only(['users', 'products'])
-      const coupon = await Coupon.create(couponData, trx)
+      let coupon = await Coupon.create(couponData, trx)
 
       const service = new Service(coupon, trx)
       if (users && !!users.length) {
@@ -79,6 +81,7 @@ class CouponController {
       }
       await coupon.save()
       await trx.commit()
+      coupon = await transform.item(coupon, Transformer)
       return response.status(201).send(coupon)
     } catch (error) {
       await trx.rollback()
@@ -97,9 +100,10 @@ class CouponController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show({ params: { id }, response }) {
+  async show({ params: { id }, response, transform }) {
     try {
-      const coupon = await Coupon.findOrFail(id)
+      let coupon = await Coupon.findOrFail(id)
+      coupon = await transform.item(coupon, Transformer)
       return response.send(coupon)
     } catch (error) {
       return response.status(400).send({
@@ -116,14 +120,14 @@ class CouponController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update({ params: { id }, request, response }) {
+  async update({ params: { id }, request, response, transform }) {
     const trx = await Database.beginTransaction()
     const can_use_for = {
       client: false,
       product: false
     }
     try {
-      const coupon = await Coupon.findOrFail(id)
+      let coupon = await Coupon.findOrFail(id)
       const couponData = request.only([
         'code',
         'valid_from',
@@ -157,6 +161,7 @@ class CouponController {
       }
       await coupon.save(trx)
       await trx.commit()
+      coupon = await transform.item(coupon, Transformer)
       return response.status(201).send(coupon)
     } catch (error) {
       await trx.rollback()
