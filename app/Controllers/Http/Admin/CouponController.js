@@ -81,7 +81,7 @@ class CouponController {
       }
       await coupon.save()
       await trx.commit()
-      coupon = await transform.item(coupon, Transformer)
+      coupon = await transform.include('users,products').item(coupon, Transformer)
       return response.status(201).send(coupon)
     } catch (error) {
       await trx.rollback()
@@ -103,7 +103,7 @@ class CouponController {
   async show({ params: { id }, response, transform }) {
     try {
       let coupon = await Coupon.findOrFail(id)
-      coupon = await transform.item(coupon, Transformer)
+      coupon = await transform.include('users,products,orders').item(coupon, Transformer)
       return response.send(coupon)
     } catch (error) {
       return response.status(400).send({
