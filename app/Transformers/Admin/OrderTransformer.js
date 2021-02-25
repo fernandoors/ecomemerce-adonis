@@ -13,7 +13,7 @@ const CouponTransformer = use('App/Transformers/Admin/CouponTransformer')
  */
 class OrderTransformer extends BumblebeeTransformer {
   static get availableInclude() {
-    return ['user', 'coupon', 'items', 'discounts']
+    return ['user', 'coupons', 'items', 'discounts']
   }
   /**
    * This method is used to transform the data.
@@ -34,13 +34,13 @@ class OrderTransformer extends BumblebeeTransformer {
     return this.item(order.getRelated('user'), UserTransformer)
   }
   includeCoupons(order) {
-    return this.item(order.getRelated('coupon'), CouponTransformer)
+    return this.collection(order.getRelated('coupons'), CouponTransformer)
   }
   includeItems(order) {
     return this.collection(order.getRelated('items'), OrderItemTransformer)
   }
   includeDiscounts(order) {
-    return this.item(order.getRelated('discounts'), UserTransformer)
+    return this.collection(order.getRelated('discounts'), UserTransformer)
   }
 }
 
