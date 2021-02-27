@@ -5,6 +5,7 @@
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
 const Database = use('Database')
+const Ws = use('Ws')
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const User = use('App/Models/User')
@@ -24,8 +25,11 @@ class AuthController {
       const user = await User.create({ email, password, name, surname }, trx)
       const userRole = await Role.findBy('slug', 'customer')
       await user.roles().attach([userRole.id], null, trx)
-
       await trx.commit()
+      const topic = Ws.getChannel('notifications').topic('notifications')
+      if (!!topic) {
+        topic.broadcast('new:user')
+      }
       return response.status(201).send({ data: user })
     } catch (error) {
       await trx.rollback()
