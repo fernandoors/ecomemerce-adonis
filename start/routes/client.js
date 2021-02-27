@@ -6,7 +6,7 @@ const Route = use('Route')
 Route.group(() => {
 
   Route.get('products', 'ProductController.index')
-  Route.get('products:id', 'ProductController.show')
+  Route.get('products/:id', 'ProductController.show')
 
   Route.get('orders', 'OrderController.get')
   Route.get('orders/:id', 'OrderController.show')

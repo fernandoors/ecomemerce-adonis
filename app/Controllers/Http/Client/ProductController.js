@@ -7,6 +7,11 @@
 /**
  * Resourceful controller for interacting with products
  */
+
+/** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
+const Product = use('App/Models/Product')
+const Transformer = use('App/Transformers/Admin/ProductTransformer')
+
 class ProductController {
   /**
    * Show a list of all products.
@@ -17,30 +22,15 @@ class ProductController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
-  }
-
-  /**
-   * Render a form to be used for creating a new product.
-   * GET products/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
-  }
-
-  /**
-   * Create/save a new product.
-   * POST products
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async store ({ request, response }) {
+  async index({ request, response, pagination, transform }) {
+    const name = request.input('name')
+    const query = Product.query()
+    if (!!name) {
+      query.where('name', 'LIKE', `%${name}%`)
+    }
+    const results = await query.paginate(pagination.page, pagination.limit)
+    const products = await transform.paginate(results, Transformer)
+    return response.send(products)
   }
 
   /**
@@ -52,41 +42,10 @@ class ProductController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
-  }
-
-  /**
-   * Render a form to update an existing product.
-   * GET products/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
-  }
-
-  /**
-   * Update product details.
-   * PUT or PATCH products/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async update ({ params, request, response }) {
-  }
-
-  /**
-   * Delete a product with id.
-   * DELETE products/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async destroy ({ params, request, response }) {
+  async show({ params: { id }, response, transform }) {
+    const result = await Product.findOrFail(id)
+    const product = await transform.item(result, Transformer)
+    return response.send(product)
   }
 }
 
